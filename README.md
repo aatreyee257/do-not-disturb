@@ -2,6 +2,9 @@
 
 A tiny Chrome extension that blocks distracting sites while you're supposed to be working, and makes quitting early just annoying enough that you don't.
 
+<img width="2400" height="1350" alt="image" src="https://github.com/user-attachments/assets/48b44170-1eab-4a5e-b49e-129c16595de9" />
+
+
 ## What it does
 
 - **Focus sessions.** Pick 25, 50 or 90 minutes (or any length up to 10 hours) and hit start.
