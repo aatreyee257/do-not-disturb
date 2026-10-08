@@ -2,8 +2,6 @@
 
 A tiny Chrome extension that blocks distracting sites while you're supposed to be working, and makes quitting early just annoying enough that you don't.
 
-![Blocked page](screenshots/blocked.png)
-
 ## What it does
 
 - **Focus sessions.** Pick 25, 50 or 90 minutes (or any length up to 10 hours) and hit start.
@@ -13,7 +11,6 @@ A tiny Chrome extension that blocks distracting sites while you're supposed to b
 - **No take-backs.** During a session you can add sites to the list, but you can't remove them.
 - **Little stats.** Completed sessions, total focus minutes, and how many times it caught you.
 
-<img src="screenshots/popup.png" width="280" alt="Popup with the quit-early prompt">
 
 ## Install
 
