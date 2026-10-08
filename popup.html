@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { width: 320px; padding: 16px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+  .timer { font-size: 44px; font-weight: 700; text-align: center; margin: 8px 0 4px; letter-spacing: -.02em; }
+  .presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 0; }
+  .presets button.sel { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  .full { width: 100%; }
+  section { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 12px; }
+  ul { list-style: none; padding: 0; margin: 8px 0 0; max-height: 150px; overflow: auto; }
+  li { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+  li button { padding: 2px 8px; font-size: 12px; }
+  .stats { display: flex; justify-content: space-between; font-size: 12px; }
+  .hidden { display: none !important; }
+  .phrase { font-size: 12px; background: var(--card); border: 1px solid var(--line); padding: 6px 8px; border-radius: 6px; margin: 6px 0; user-select: none; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>DON'T GET DISTRACTED</h1>
+    <span id="status" class="muted">idle</span>
+  </header>
+
+  <!-- Idle view -->
+  <div id="idle">
+    <div class="presets" id="presets">
+      <button data-m="25" class="sel">25m</button>
+      <button data-m="50">50m</button>
+      <button data-m="90">90m</button>
+      <button data-m="custom">…</button>
+    </div>
+    <div class="row hidden" id="customRow">
+      <input id="customMin" type="number" min="1" max="600" placeholder="Minutes (1–600)">
+    </div>
+    <button class="primary full" id="startBtn" style="margin-top:8px">Start focus · 25 min</button>
+  </div>
+
+  <!-- Active view -->
+  <div id="active" class="hidden">
+    <div class="timer mono" id="timer">00:00</div>
+    <p class="muted" style="text-align:center;margin:0 0 10px">Blocked sites are locked until this hits zero.</p>
+    <button class="full" id="quitBtn">I want to quit early</button>
+    <div id="quitBox" class="hidden" style="margin-top:8px">
+      <p class="muted" style="margin:0;font-size:12px">Type this exactly to end the session (no pasting):</p>
+      <div class="phrase mono" id="phrase"></div>
+      <input id="phraseInput" autocomplete="off" spellcheck="false">
+      <button class="full" id="confirmQuit" disabled style="margin-top:6px">End session</button>
+    </div>
+  </div>
+
+  <section>
+    <div class="row">
+      <input id="siteInput" placeholder="Add site, e.g. linkedin.com">
+      <button id="addBtn">Add</button>
+    </div>
+    <ul id="siteList"></ul>
+    <p id="lockNote" class="muted hidden" style="font-size:12px;margin:6px 0 0">You can add sites during a session, but not remove them.</p>
+  </section>
+
+  <section class="stats muted">
+    <span>Sessions: <b id="sSessions">0</b></span>
+    <span>Focus min: <b id="sMinutes">0</b></span>
+    <span>Blocks: <b id="sBlocked">0</b></span>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>
