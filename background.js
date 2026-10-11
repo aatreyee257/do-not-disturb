@@ -125,20 +125,11 @@ async function kickOpenTabs() {
   for (const tab of tabs) {
     if (!tab.url) continue;
 
-    // TODO 1: get the tab's hostname from tab.url
-    //         hint: new URL(tab.url).hostname gives "www.youtube.com"
     const hostName = new URL(tab.url).hostname;
 
-    // TODO 2: decide if it's blocked. "www.youtube.com" and "m.youtube.com"
-    //         must both match "youtube.com", but "notyoutube.com" must NOT.
-    //         hint: equal to the site, OR ends with "." + site
+    const blockedSite = sites.find(site => hostName === site || hostName.endsWith("." + site));
 
-    const isBlocked = sites.some(site => hostName === site || hostName.endsWith("." + site));
-
-    // TODO 3: if blocked, send the tab to the blocked page
-    //         hint: chrome.runtime.getURL("blocked.html?site=" + encodeURIComponent(site))
-    //               chrome.tabs.update(tab.id, { url: ... })
-    if(isBlocked) {
+    if(blockedSite) {
       const blockedUrl = chrome.runtime.getURL("blocked.html?site=" + encodeURIComponent(blockedSite));
       try { 
         await chrome.tabs.update(tab.id, { url: blockedUrl });
