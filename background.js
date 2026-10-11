@@ -44,6 +44,7 @@ async function startSession(minutes) {
   const endsAt = Date.now() + minutes * 60_000;
   await chrome.storage.local.set({ session: { endsAt, minutes, startedAt: Date.now() } });
   await applyRules();
+  await kickOpenTabs();
   await chrome.alarms.create(ALARM, { when: endsAt });
   await setBadge(true);
   return { ok: true, endsAt };
@@ -67,7 +68,10 @@ async function setSites(sites) {
   const clean = [...new Set(sites.map(normalise).filter(Boolean))];
   await chrome.storage.local.set({ sites: clean });
   const { session } = await chrome.storage.local.get("session");
-  if (session) await applyRules(); // live-update an active session (additions only matter; popup blocks removals)
+  if (session){
+    await applyRules();
+    await kickOpenTabs();
+  }  // live-update an active session (additions only matter; popup blocks removals)
   return { ok: true, sites: clean };
 }
 
@@ -112,4 +116,37 @@ async function reconcile() {
 async function setBadge(on) {
   await chrome.action.setBadgeText({ text: on ? "ON" : "" });
   await chrome.action.setBadgeBackgroundColor({ color: "#d9480f" });
+}
+
+async function kickOpenTabs() {
+  const { sites = [] } = await chrome.storage.local.get("sites");
+  const tabs = await chrome.tabs.query({});   // {} = every tab in every window
+
+  for (const tab of tabs) {
+    if (!tab.url) continue;
+
+    // TODO 1: get the tab's hostname from tab.url
+    //         hint: new URL(tab.url).hostname gives "www.youtube.com"
+    const hostName = new URL(tab.url).hostname;
+
+    // TODO 2: decide if it's blocked. "www.youtube.com" and "m.youtube.com"
+    //         must both match "youtube.com", but "notyoutube.com" must NOT.
+    //         hint: equal to the site, OR ends with "." + site
+
+    const isBlocked = sites.some(site => hostName === site || hostName.endsWith("." + site));
+
+    // TODO 3: if blocked, send the tab to the blocked page
+    //         hint: chrome.runtime.getURL("blocked.html?site=" + encodeURIComponent(site))
+    //               chrome.tabs.update(tab.id, { url: ... })
+    if(isBlocked) {
+      const blockedUrl = chrome.runtime.getURL("blocked.html?site=" + encodeURIComponent(blockedSite));
+      try { 
+        await chrome.tabs.update(tab.id, { url: blockedUrl });
+      }
+      catch (e) {
+        console.warn("Couldn't block tab", tab.id, e);
+      }
+     
+    }
+  }
 }
